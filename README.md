@@ -59,7 +59,7 @@ Open [http://localhost:3000/case-studies](http://localhost:3000/case-studies) to
 - Case study management through Payload CMS
 - Reproducible CSV seed data
 - Responsive layouts and accessible labels for search, filters, and pagination
-- Loading, error, empty-result, and not-found states
+- Error, empty-result, and not-found states
 - Page-specific title, description, Open Graph, and Twitter metadata for case study details
 
 Cover-image metadata is included when a case study has an associated image.
