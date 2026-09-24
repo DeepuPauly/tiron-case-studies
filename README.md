@@ -1,67 +1,132 @@
-# Payload Blank Template
 
-This template comes configured with the bare minimum to get started on anything you need.
+# TIRON Case Studies
 
-## Quick start
+A case studies application built with Next.js App Router, Payload CMS, MongoDB, and Tailwind CSS.
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+The application provides a searchable, filterable case study listing and individual detail pages. Case study content is managed through Payload CMS and can be populated using the included CSV seed script.
 
-## Quick Start - local setup
+## Requirements
 
-To spin up this template locally, follow these steps:
+- Node.js and npm
+- MongoDB, running locally or accessible through a connection string
 
-### Clone
+## Local setup
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+1. Clone the repository and open the project directory:
 
-### Development
+   ```bash
+   git clone https://github.com/DeepuPauly/tiron-case-studies.git
+   cd tiron-case-studies
+   ```
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URL` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+2. Install dependencies:
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+   ```bash
+   npm install
+   ```
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+3. Copy `.env.example` to `.env` and set the environment variables:
 
-#### Docker (Optional)
+   ```env
+   DATABASE_URL=mongodb://127.0.0.1/your-database-name
+   PAYLOAD_SECRET=replace-with-a-long-random-secret
+   ```
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+   `DATABASE_URL` is the MongoDB connection string. `PAYLOAD_SECRET` is used by Payload CMS; use a strong secret and do not commit your `.env` file.
 
-To do so, follow these steps:
+4. Start MongoDB if you are using a local database.
 
-- Modify the `MONGODB_URL` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URL` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+5. Seed the case studies:
 
-## How it works
+   ```bash
+   npm run seed
+   ```
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+   The seed script reads `seed.csv` and creates case studies that do not already exist with the same slug. Running it again skips existing slugs rather than creating duplicates; it does not overwrite existing case studies.
 
-### Collections
+6. Start the development server:
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+   ```bash
+   npm run dev
+   ```
 
-- #### Users (Authentication)
+Open [http://localhost:3000/case-studies](http://localhost:3000/case-studies) to view the listing. Open [http://localhost:3000/admin](http://localhost:3000/admin) to access Payload CMS and create an admin account if prompted.
 
-  Users are auth-enabled collections that have access to the admin panel.
+## Features
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/3.x/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+- Case study listing with text search, category filtering, and pagination
+- Individual case study pages with challenge, solution, results, and technologies
+- Case study management through Payload CMS
+- Reproducible CSV seed data
+- Responsive layouts and accessible labels for search, filters, and pagination
+- Loading, error, empty-result, and not-found states
+- Page-specific title, description, Open Graph, and Twitter metadata for case study details
 
-- #### Media
+Cover-image metadata is included when a case study has an associated image.
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+## Implementation decisions
 
-### Docker
+### Search, filtering, and pagination
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
+The listing fetches case studies on the server, then passes them to a client component. Search and category filtering operate on the fetched data, and pagination displays six matching case studies per page. Changing the search term or category resets the page number so that the user does not remain on an out-of-range page.
 
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
+The current server query retrieves up to 100 case studies, ordered by newest creation date. This keeps the implementation straightforward for the assessment dataset, but it is not a complete solution for a larger collection: case studies beyond the first 100 would not appear in search or filter results. For a production-scale dataset, I would move search, filtering, and pagination into the database query and return the total matching count.
 
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
+### Ordering and featured content
 
-## Questions
+The listing uses newest-first ordering based on `createdAt`. The CMS also includes a `featured` field, but the current listing does not prioritize featured records. A future enhancement could define an explicit featured-first ordering and provide editorial controls for featured placement.
 
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+### Empty results
+
+When a search or category selection produces no matches, the listing displays an empty-result message rather than an empty grid. The user can change or clear the active filters to see results again.
+
+### Caching and content updates
+
+The case studies listing uses a 60-second revalidation interval. This reduces repeated server work while allowing listing updates to appear after the revalidation window.
+
+The detail route also declares a 60-second revalidation interval, but it is rendered dynamically; the interval alone should not be treated as proof that its Payload queries are cached. For a production deployment, I would verify the route's caching behavior and add explicit, CMS-triggered cache invalidation where appropriate.
+
+The route-level `loading.tsx` boundary was removed because it caused a nonexistent case study to display not-found content while returning HTTP 200. Without that boundary, the tested nonexistent slug returns HTTP 404.
+
+## Tests
+
+Run the integration tests:
+
+```bash
+npm run test:int
+```
+
+Run the end-to-end tests:
+
+```bash
+npm run test:e2e
+```
+
+Run both suites:
+
+```bash
+npm run test
+```
+
+The end-to-end suite uses Playwright. If browser binaries are not installed, install them with:
+
+```bash
+npx playwright install
+```
+
+## Production build
+
+```bash
+npm run build
+npm run start
+```
+
+The application requires access to MongoDB and the environment variables described above when running.
+
+## What I would improve with more time
+
+- Move listing search, filtering, and pagination to database-backed queries for larger datasets.
+- Add explicit featured-content ordering and editorial controls.
+- Add CMS-triggered cache invalidation and verify detail-page caching behavior.
+- Expand automated coverage for seeding, metadata, accessibility, and CMS content changes.
+- Add deployment configuration, monitoring, and production media storage.

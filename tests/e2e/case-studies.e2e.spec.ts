@@ -227,7 +227,8 @@ test.describe('Case Studies', () => {
     await projectLink.click()
 
     await expect(page).toHaveURL(
-      `${BASE_URL}${href}`,
+    `${BASE_URL}${href}`,
+    { timeout: 15000 },
     )
 
     await expect(

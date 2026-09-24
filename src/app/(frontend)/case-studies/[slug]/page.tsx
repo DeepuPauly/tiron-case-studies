@@ -1,6 +1,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 
@@ -9,6 +10,78 @@ import type { CaseStudy, Media } from '@/payload-types'
 
 type PageProps = {
   params: Promise<{ slug: string }>
+}
+
+// Revalidate the case study page every 60 seconds.
+export const revalidate = 60
+
+// Generate SEO metadata for each individual case study.
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params
+
+  const payload = await getPayload({ config })
+
+  const { docs } = await payload.find({
+    collection: 'case-studies',
+    where: {
+      slug: {
+        equals: slug,
+      },
+    },
+    limit: 1,
+    depth: 1,
+  })
+
+  if (docs.length === 0) {
+    return {
+      title: 'Case Study Not Found | Tiron',
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  }
+
+  const study = docs[0]
+
+  const title = `${study.title} | Tiron Case Studies`
+  const description = study.summary
+
+  const coverImage =
+    study.coverImage &&
+    typeof study.coverImage === 'object'
+      ? (study.coverImage as Media)
+      : null
+
+  const imageUrl = coverImage?.url || undefined
+
+  return {
+    title,
+    description,
+
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      images: imageUrl
+        ? [
+            {
+              url: imageUrl,
+              alt: coverImage?.alt || study.title,
+            },
+          ]
+        : [],
+    },
+
+    twitter: {
+      card: imageUrl ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    },
+  }
 }
 
 export default async function CaseStudyPage({

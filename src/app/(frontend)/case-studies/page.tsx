@@ -6,6 +6,8 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import CaseStudiesList from '@/components/CaseStudiesList'
 
+export const revalidate = 60
+
 export default async function CaseStudiesPage() {
   const payload = await getPayload({ config })
 
