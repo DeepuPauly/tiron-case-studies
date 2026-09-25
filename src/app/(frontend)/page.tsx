@@ -1,5 +1,6 @@
-
+import Link from 'next/link'
 import { getPayload } from 'payload'
+
 import config from '@/payload.config'
 import CaseStudiesList from '@/components/CaseStudiesList'
 
@@ -22,13 +23,13 @@ export default async function HomePage() {
     <div className="site-wrapper">
       <header className="site-header">
         <div className="container header-content">
-          <a href="/" className="logo">
+          <Link href="/" className="logo">
             TIRON<span>.</span>
-          </a>
+          </Link>
 
           <nav className="navigation">
-            <a href="/">Case Studies</a>
-            <a href="/admin">Admin Panel</a>
+            <Link href="/">Case Studies</Link>
+            <Link href="/admin">Admin Panel</Link>
           </nav>
         </div>
       </header>
@@ -92,8 +93,9 @@ export default async function HomePage() {
       <footer className="site-footer">
         <div className="container footer-content">
           <span>TIRON.</span>
+
           <p>
-            © {new Date().getFullYear()} Tiron.
+            &copy; {new Date().getFullYear()} Tiron.
             All rights reserved.
           </p>
         </div>

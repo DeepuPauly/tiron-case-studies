@@ -24,7 +24,7 @@ export default async function CaseStudiesPage() {
   )
 
   return (
-    <div className="site-wrapper">
+    <div className="site-wrapper min-h-screen w-full">
 
       {/* Header */}
       <header className="site-header">
@@ -125,7 +125,7 @@ export default async function CaseStudiesPage() {
           </span>
 
           <p>
-            © {new Date().getFullYear()} Tiron.
+            &copy; {new Date().getFullYear()} Tiron.
             All rights reserved.
           </p>
 

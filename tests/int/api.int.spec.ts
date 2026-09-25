@@ -22,6 +22,13 @@ describe('Case Studies API', () => {
     expect(Array.isArray(result.docs)).toBe(true)
     expect(result.docs.length).toBeGreaterThan(0)
 
+    for (let i = 1; i < result.docs.length; i += 1) {
+      const previousDate = new Date(result.docs[i - 1].createdAt).getTime()
+      const currentDate = new Date(result.docs[i].createdAt).getTime()
+
+      expect(previousDate).toBeGreaterThanOrEqual(currentDate)
+    }
+
     const firstStudy = result.docs[0]
 
     expect(firstStudy).toHaveProperty('title')

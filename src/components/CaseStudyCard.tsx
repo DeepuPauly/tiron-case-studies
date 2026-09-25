@@ -17,7 +17,7 @@ export default function CaseStudyCard({ study }: Props) {
   }
 
   return (
-    <article className="case-card">
+    <article className="case-card flex h-full flex-col overflow-hidden">
       <CaseStudyLink href={`/case-studies/${study.slug}`} className="card-image-link">
         <div className="card-image">
           {image?.url ? (

@@ -253,7 +253,11 @@ test.describe('Case Studies', () => {
   })
 
   test('shows a not-found page for an invalid slug', async ({ page }) => {
-    await page.goto(`${CASE_STUDIES_URL}/project-that-does-not-exist-12345`)
+    const response = await page.goto(
+    `${CASE_STUDIES_URL}/project-that-does-not-exist-12345`,
+    )
+
+    expect(response?.status()).toBe(404)
 
     await expect(page.getByText('This page could not be found.')).toBeVisible()
 
