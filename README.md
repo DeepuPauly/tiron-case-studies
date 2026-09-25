@@ -42,7 +42,7 @@ The application provides a searchable, filterable case study listing and individ
    npm run seed
    ```
 
-   The seed script reads `seed.csv` and creates case studies that do not already exist with the same slug. Running it again skips existing slugs rather than creating duplicates; it does not overwrite existing case studies.
+  The seed script reads `seed.csv` and the corresponding cover images from `seed-assets/`. It creates the required Payload Media records and associates each cover image with its case study. Existing case studies with the same slug are skipped, so running the seed again does not create duplicate case studies or overwrite existing content.
 
 6. Start the development server:
 
