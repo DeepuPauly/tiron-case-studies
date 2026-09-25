@@ -30,6 +30,35 @@ test.describe('Case Studies', () => {
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 
+  test('renders SEO and Open Graph metadata for a case study', async ({ page }) => {
+    const firstCard = page.locator('.case-card').first()
+    await expect(firstCard).toBeVisible()
+
+    const projectTitle = (await firstCard.locator('h2').innerText()).trim()
+    const projectLink = firstCard.locator('h2').getByRole('link')
+    const href = await projectLink.getAttribute('href')
+
+    expect(href).toBeTruthy()
+
+    await page.goto(`${BASE_URL}${href}`)
+
+    await expect(page).toHaveTitle(`${projectTitle} | Tiron Case Studies`)
+
+    const description = page.locator('meta[name="description"]')
+    await expect(description).toHaveAttribute('content', /.+/)
+
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      'content',
+      `${projectTitle} | Tiron Case Studies`,
+    )
+
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /.+/)
+
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'article')
+
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', /summary/)
+  })
+
   test.beforeEach(async ({ page }) => {
     const response = await page.goto(CASE_STUDIES_URL)
 
