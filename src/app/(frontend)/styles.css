@@ -739,3 +739,33 @@ button {
     gap: 6px;
   }
 }
+.case-navigation-loading {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.case-navigation-loading::before {
+  content: '';
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-right: 0.5rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: case-navigation-spin 0.7s linear infinite;
+}
+
+@keyframes case-navigation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-navigation-loading::before {
+    animation: none;
+  }
+}

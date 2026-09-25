@@ -1,5 +1,4 @@
-
-import Link from 'next/link'
+import CaseStudyLink from '@/components/CaseStudyLink'
 import type { CaseStudy } from '@/payload-types'
 
 type Props = {
@@ -8,10 +7,7 @@ type Props = {
 
 export default function CaseStudyCard({ study }: Props) {
   const image =
-    typeof study.coverImage === 'object' &&
-    study.coverImage !== null
-      ? study.coverImage
-      : null
+    typeof study.coverImage === 'object' && study.coverImage !== null ? study.coverImage : null
 
   const categoryLabels: Record<string, string> = {
     'web-development': 'Web Development',
@@ -22,57 +18,34 @@ export default function CaseStudyCard({ study }: Props) {
 
   return (
     <article className="case-card">
-      <Link
-        href={`/case-studies/${study.slug}`}
-        className="card-image-link"
-      >
+      <CaseStudyLink href={`/case-studies/${study.slug}`} className="card-image-link">
         <div className="card-image">
           {image?.url ? (
-            <img
-              src={image.url}
-              alt={image.alt || study.title}
-              loading="lazy"
-            />
+            <img src={image.url} alt={image.alt || study.title} loading="lazy" />
           ) : (
             <div className="image-placeholder">
               <span>{study.title}</span>
             </div>
           )}
 
-          {study.featured && (
-            <span className="featured-badge">
-              Featured
-            </span>
-          )}
+          {study.featured && <span className="featured-badge">Featured</span>}
         </div>
-      </Link>
+      </CaseStudyLink>
 
       <div className="card-content">
-        <span className="card-category">
-          {categoryLabels[study.category] ||
-            study.category}
-        </span>
+        <span className="card-category">{categoryLabels[study.category] || study.category}</span>
 
         <h2>
-          <Link href={`/case-studies/${study.slug}`}>
-            {study.title}
-          </Link>
+          <CaseStudyLink href={`/case-studies/${study.slug}`}>{study.title}</CaseStudyLink>
         </h2>
 
-        <p className="card-client">
-          {study.client}
-        </p>
+        <p className="card-client">{study.client}</p>
 
-        <p className="card-summary">
-          {study.summary}
-        </p>
+        <p className="card-summary">{study.summary}</p>
 
-        <Link
-          href={`/case-studies/${study.slug}`}
-          className="card-link"
-        >
-          View Case Study →
-        </Link>
+        <CaseStudyLink href={`/case-studies/${study.slug}`} className="card-link">
+          View Case Study &rarr;
+        </CaseStudyLink>
       </div>
     </article>
   )
