@@ -1,6 +1,5 @@
 import 'dotenv/config'
-
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -24,6 +23,7 @@ type SeedRow = {
   technologies: string
   featured: string
   completedAt: string
+  image: string
 }
 
 const validCategories = [
@@ -40,6 +40,7 @@ async function seed() {
 
   try {
     const csvPath = path.resolve(dirname, '../seed.csv')
+    const assetsPath = path.resolve(dirname, '../seed-assets')
 
     const csvContent = readFileSync(csvPath, 'utf-8')
 
@@ -76,6 +77,42 @@ async function seed() {
         continue
       }
 
+      let coverImage: string | undefined
+
+      if (record.image) {
+        const imagePath = path.join(assetsPath, record.image)
+
+        if (!existsSync(imagePath)) {
+          throw new Error(`Seed image not found: ${record.image}`)
+        }
+
+        const existingMedia = await payload.find({
+          collection: 'media',
+          where: {
+            filename: {
+              equals: record.image,
+            },
+          },
+          limit: 1,
+        })
+
+        if (existingMedia.totalDocs > 0) {
+          coverImage = existingMedia.docs[0].id
+          console.log(`Using existing media: ${record.image}`)
+        } else {
+          const media = await payload.create({
+            collection: 'media',
+            data: {
+              alt: `${record.title} case study cover image`,
+            },
+            filePath: imagePath,
+          })
+
+          coverImage = media.id
+          console.log(`Created media: ${record.image}`)
+        }
+      }
+
       await payload.create({
         collection: 'case-studies',
         data: {
@@ -105,7 +142,18 @@ async function seed() {
             : [],
 
           featured: record.featured.toLowerCase() === 'true',
-          ...(record.completedAt ? { completedAt: record.completedAt } : {}),
+
+          ...(record.completedAt
+            ? {
+                completedAt: record.completedAt,
+              }
+            : {}),
+
+          ...(coverImage
+            ? {
+                coverImage,
+              }
+            : {}),
         },
       })
 
