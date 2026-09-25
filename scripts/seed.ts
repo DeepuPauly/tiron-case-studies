@@ -21,6 +21,8 @@ type SeedRow = {
   summary: string
   challenge: string
   solution: string
+  results: string
+  technologies: string  
   featured: string
   completedAt: string
 }
@@ -91,6 +93,24 @@ async function seed() {
           summary: record.summary,
           challenge: record.challenge,
           solution: record.solution,
+
+          results: record.results
+            ? record.results.split('|').map((item) => {
+                const [metric, value] = item.split(':')
+
+                return {
+                  metric: metric.trim(),
+                  value: value.trim(),
+                }
+              })
+            : [],
+
+          technologies: record.technologies
+            ? record.technologies.split('|').map((name) => ({
+                name: name.trim(),
+              }))
+            : [],
+
           featured:
             record.featured.toLowerCase() === 'true',
           ...(record.completedAt

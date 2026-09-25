@@ -180,6 +180,14 @@ button {
   border-color: var(--accent);
 }
 
+.filter-button:focus-visible,
+.card-image-link:focus-visible,
+.card-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 .search-input {
   background: var(--surface);
   border: 1px solid var(--border);

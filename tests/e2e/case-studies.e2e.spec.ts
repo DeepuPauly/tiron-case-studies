@@ -5,6 +5,41 @@ const CASE_STUDIES_URL = `${BASE_URL}/case-studies`
 const PROJECTS_PER_PAGE = 6
 
 test.describe('Case Studies', () => {
+
+    test('supports keyboard navigation for interactive controls', async ({ page }) => {
+  const search = page.getByRole('searchbox', {
+    name: 'Search case studies',
+  })
+
+  await search.focus()
+  await expect(search).toBeFocused()
+
+  await page.keyboard.press('Tab')
+
+  const focusedElement = page.locator(':focus')
+  await expect(focusedElement).toBeVisible()
+
+  const firstProjectLink = page
+    .locator('.case-card')
+    .first()
+    .getByRole('link')
+    .first()
+
+  await firstProjectLink.focus()
+  await expect(firstProjectLink).toBeFocused()
+
+  await page.keyboard.press('Enter')
+
+  await expect(page).toHaveURL(
+    /\/case-studies\/[^/]+$/,
+    { timeout: 15000 },
+  )
+
+  await expect(
+    page.getByRole('heading', { level: 1 }),
+  ).toBeVisible()
+})
+
   test.beforeEach(async ({ page }) => {
     const response = await page.goto(CASE_STUDIES_URL)
 
