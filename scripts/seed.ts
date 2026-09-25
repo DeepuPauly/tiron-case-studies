@@ -1,4 +1,3 @@
-
 import 'dotenv/config'
 
 import { readFileSync } from 'node:fs'
@@ -22,7 +21,7 @@ type SeedRow = {
   challenge: string
   solution: string
   results: string
-  technologies: string  
+  technologies: string
   featured: string
   completedAt: string
 }
@@ -58,14 +57,8 @@ async function seed() {
         throw new Error('A CSV row is missing a title or slug.')
       }
 
-      if (
-        !validCategories.includes(
-          record.category as Category,
-        )
-      ) {
-        throw new Error(
-          `Invalid category: ${record.category}`,
-        )
+      if (!validCategories.includes(record.category as Category)) {
+        throw new Error(`Invalid category: ${record.category}`)
       }
 
       const existing = await payload.find({
@@ -111,11 +104,8 @@ async function seed() {
               }))
             : [],
 
-          featured:
-            record.featured.toLowerCase() === 'true',
-          ...(record.completedAt
-            ? { completedAt: record.completedAt }
-            : {}),
+          featured: record.featured.toLowerCase() === 'true',
+          ...(record.completedAt ? { completedAt: record.completedAt } : {}),
         },
       })
 
