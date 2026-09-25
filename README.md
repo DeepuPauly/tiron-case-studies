@@ -59,7 +59,7 @@ Open [http://localhost:3000/case-studies](http://localhost:3000/case-studies) to
 - Case study management through Payload CMS
 - Reproducible CSV seed data
 - Responsive layouts and accessible labels for search, filters, and pagination
-- Error, empty-result, and not-found states
+- Accessible navigation loading, error, empty-result, and HTTP 404 not-found states
 - Page-specific title, description, Open Graph, and Twitter metadata for case study details
 
 Cover-image metadata is included when a case study has an associated image.
@@ -86,7 +86,7 @@ The case studies listing uses a 60-second revalidation interval. This reduces re
 
 The detail route also declares a 60-second revalidation interval, but it is rendered dynamically; the interval alone should not be treated as proof that its Payload queries are cached. For a production deployment, I would verify the route's caching behavior and add explicit, CMS-triggered cache invalidation where appropriate.
 
-The route-level `loading.tsx` boundary was removed because it caused a nonexistent case study to display not-found content while returning HTTP 200. Without that boundary, the tested nonexistent slug returns HTTP 404.
+A route-level `loading.tsx` boundary was intentionally avoided because it caused a nonexistent case study to display not-found content while returning HTTP 200. Instead, case study links provide an accessible client-side navigation loading indicator with a visible spinner and `role="status"`. The loading animation also respects the user's `prefers-reduced-motion` setting. This preserves loading feedback during navigation while allowing nonexistent case study URLs to return the correct HTTP 404 response.
 
 ## Tests
 
