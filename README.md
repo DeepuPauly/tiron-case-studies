@@ -80,6 +80,10 @@ The listing uses newest-first ordering based on `createdAt`. The CMS also includ
 
 When a search or category selection produces no matches, the listing displays an empty-result message rather than an empty grid. The user can change or clear the active filters to see results again.
 
+### Case studies without results
+
+The results field is optional. If a case study does not have measurable results yet, the detail page omits the Results & Impact section rather than displaying an empty section or placeholder metrics. This keeps the page meaningful while allowing case studies to be published before final results are available.
+
 ### Caching and content updates
 
 The case studies listing uses a 60-second revalidation interval. This reduces repeated server work while allowing listing updates to appear after the revalidation window.
